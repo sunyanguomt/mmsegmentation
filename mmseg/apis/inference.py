@@ -8,7 +8,7 @@ from mmseg.datasets.pipelines import Compose
 from mmseg.models import build_segmentor
 
 
-def init_segmentor(config, checkpoint=None, device='cuda:0'):
+def init_segmentor(config, checkpoint=None, device='musa:0'):
     """Initialize a segmentor from config file.
 
     Args:
@@ -16,7 +16,7 @@ def init_segmentor(config, checkpoint=None, device='cuda:0'):
             object.
         checkpoint (str, optional): Checkpoint path. If left as None, the model
             will not load any weights.
-        device (str, optional) CPU/CUDA device option. Default 'cuda:0'.
+        device (str, optional) CPU/MUSA device option. Default 'musa:0'.
             Use 'cpu' for loading model on CPU.
     Returns:
         nn.Module: The constructed segmentor.
@@ -86,7 +86,7 @@ def inference_segmentor(model, img):
     data = dict(img=img)
     data = test_pipeline(data)
     data = collate([data], samples_per_gpu=1)
-    if next(model.parameters()).is_cuda:
+    if next(model.parameters()).is_musa:
         # scatter to specified GPU
         data = scatter(data, [device])[0]
     else:
